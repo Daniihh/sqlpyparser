@@ -13,12 +13,12 @@ from mysqlparse.grammar.utils import stripQuotes
 #
 
 identifier_syntax = Or([
-    Word(alphanums + "_$"),
-    QuotedString('"'),
-    QuotedString("`"),
-    QuotedString("'")
+	Word(alphanums + "_$"),
+	QuotedString('"'),
+	QuotedString("`"),
+	QuotedString("'")
 ]).setParseAction(stripQuotes)
 
 database_name_syntax = (Optional(identifier_syntax + FollowedBy('.') +
-                                 Suppress('.'), default=None)
-                        .setParseAction(lambda s, l, toks: toks[0]))
+								 Suppress('.'), default=None)
+						.setParseAction(lambda s, l, toks: toks[0]))

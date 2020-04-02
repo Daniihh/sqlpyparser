@@ -11,17 +11,17 @@ from mysqlparse.grammar.data_type import data_type_syntax
 #
 
 _nullable = Or([
-    CaselessKeyword("NOT NULL").setParseAction(replaceWith(False)),
-    CaselessKeyword("NULL").setParseAction(replaceWith(True))
+	CaselessKeyword("NOT NULL").setParseAction(replaceWith(False)),
+	CaselessKeyword("NULL").setParseAction(replaceWith(True))
 ])
 _default = (
-    Suppress(CaselessKeyword("DEFAULT")) +
-    Or([Word(nums), QuotedString("'"), CaselessKeyword("NULL")]).setName("default").setResultsName("default")
+	Suppress(CaselessKeyword("DEFAULT")) +
+	Or([Word(nums), QuotedString("'"), CaselessKeyword("NULL")]).setName("default").setResultsName("default")
 )
 _auto_increment = CaselessKeyword("AUTO_INCREMENT").setResultsName("auto_increment").setParseAction(replaceWith(True))
 _index_type = Or([
-    (CaselessKeyword("UNIQUE") + Optional(CaselessKeyword("KEY"))).setParseAction(replaceWith("unique_key")),
-    (Optional(CaselessKeyword("PRIMARY")) + CaselessKeyword("KEY")).setParseAction(replaceWith("primary_key"))
+	(CaselessKeyword("UNIQUE") + Optional(CaselessKeyword("KEY"))).setParseAction(replaceWith("unique_key")),
+	(Optional(CaselessKeyword("PRIMARY")) + CaselessKeyword("KEY")).setParseAction(replaceWith("primary_key"))
 ]).setResultsName("index_type")
 _comment = CaselessKeyword("COMMENT") + Or([QuotedString("'"), QuotedString('"')]).setResultsName("comment")
 
@@ -34,15 +34,15 @@ _comment = CaselessKeyword("COMMENT") + Or([QuotedString("'"), QuotedString('"')
 
 column_definition_syntax = Forward()
 column_definition_syntax <<= (
-    data_type_syntax +
-    Optional(_nullable, default="implicit").setResultsName("null") +
-    ZeroOrMore(
-        MatchFirst([
-            _default,
-            _auto_increment,
-            _index_type,
-            _comment,
-            _nullable.setResultsName("null")
-        ])
-    )
+	data_type_syntax +
+	Optional(_nullable, default="implicit").setResultsName("null") +
+	ZeroOrMore(
+		MatchFirst([
+			_default,
+			_auto_increment,
+			_index_type,
+			_comment,
+			_nullable.setResultsName("null")
+		])
+	)
 )

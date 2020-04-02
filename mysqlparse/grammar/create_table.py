@@ -16,13 +16,13 @@ _column_specification_syntax = (identifier_syntax.setResultsName("column_name") 
 _create_type = CaselessKeyword("TABLE").setResultsName("create_type")
 
 _temporary = Optional(
-    CaselessKeyword("TEMPORARY").setParseAction(replaceWith(True)),
-    default=False,
+	CaselessKeyword("TEMPORARY").setParseAction(replaceWith(True)),
+	default=False,
 ).setResultsName("temporary")
 
 _if_not_exists = Optional(
-    CaselessKeyword("IF NOT EXISTS").setParseAction(replaceWith(False)),
-    default=True,
+	CaselessKeyword("IF NOT EXISTS").setParseAction(replaceWith(False)),
+	default=True,
 ).setResultsName("overwrite")
 
 _table_option = Word(alphas + "_").setResultsName("key") + Optional(Suppress("=")) + identifier_syntax.setResultsName("value")
@@ -34,15 +34,15 @@ _table_option = Word(alphas + "_").setResultsName("key") + Optional(Suppress("="
 #
 
 create_table_syntax = (
-    CaselessKeyword("CREATE").setResultsName("statement_type") + _temporary +
-    _create_type + _if_not_exists + Word(alphanums + "`_").setResultsName("table_name") +
-    Suppress("(") +
-    delimitedList(
-        OneOrMore(Group(_column_specification_syntax).setResultsName("column_specification", listAllMatches=True))
-    ) +
-    Suppress(")") +
-    Optional(
-        ZeroOrMore(Group(_table_option)), default=[]
-    ).setResultsName("table_options") +
-    Suppress(Optional(";"))
+	CaselessKeyword("CREATE").setResultsName("statement_type") + _temporary +
+	_create_type + _if_not_exists + Word(alphanums + "`_").setResultsName("table_name") +
+	Suppress("(") +
+	delimitedList(
+		OneOrMore(Group(_column_specification_syntax).setResultsName("column_specification", listAllMatches=True))
+	) +
+	Suppress(")") +
+	Optional(
+		ZeroOrMore(Group(_table_option)), default=[]
+	).setResultsName("table_options") +
+	Suppress(Optional(";"))
 )
