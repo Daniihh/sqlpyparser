@@ -18,11 +18,25 @@ table_reference = Group(
 	)
 )
 
+# COLUMN REFERENCE
+column_reference = Group(
+	(
+		identifier_syntax.setResultsName("column_name") +
+		Optional(
+			(
+				CaselessKeyword("AS") +
+				identifier_syntax.setResultsName("alias_name")
+			)
+		)
+	)
+)
+
 # SELECT SYNTAX
 # The full implemented SELECT syntax.
 # Source: https://dev.mysql.com/doc/refman/5.7/en/select.html
 select_syntax = (
 	CaselessKeyword("SELECT").setResultsName("statement_type") +
+	(delimitedList(column_reference) ^ CaselessKeyword("*")).setResultsName("columns") +
 	CaselessKeyword("FROM") +
 	delimitedList(table_reference).setResultsName("tables") + 
 	Suppress(Optional(";"))
