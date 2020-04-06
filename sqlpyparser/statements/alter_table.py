@@ -1,13 +1,8 @@
-# -*- encoding:utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-from pyparsing import *
-
-from mysqlparse.grammar.column_definition import column_definition_syntax
-from mysqlparse.grammar.identifier import (
-	identifier_syntax,
-	database_name_syntax
-	)
+from pyparsing import CaselessKeyword, Empty, FollowedBy, Forward, Group, \
+	OneOrMore, Optional, Or, QuotedString, Suppress, Word, delimitedList, nums, \
+	replaceWith
+from .column_definition import column_definition_syntax
+from .identifier import identifier_syntax, database_name_syntax
 
 # ADD COLUMN
 _column_name = identifier_syntax.setResultsName("column_name")
@@ -169,7 +164,9 @@ _ignore = Optional(
 #
 
 alter_table_syntax = (
-	CaselessKeyword("ALTER").setResultsName("statement_type") + _ignore + Suppress(Optional(CaselessKeyword("TABLE"))) +
+	CaselessKeyword("ALTER").setResultsName("statement_type") +
+	_ignore +
+	Suppress(Optional(CaselessKeyword("TABLE"))) +
 	database_name_syntax.setResultsName("database_name") +
 	identifier_syntax.setResultsName("table_name") +
 	delimitedList(Group(_alter_specification_syntax).setResultsName("alter_specification", listAllMatches=True)) +

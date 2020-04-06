@@ -1,10 +1,6 @@
-# -*- encoding:utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-from pyparsing import *
-
-from mysqlparse.grammar.utils import stripQuotes
-
+from pyparsing import FollowedBy, Optional, Or, QuotedString, Suppress, Word, \
+	alphanums
+from .utils import stripQuotes
 
 #
 # SCHEMA OBJECT NAMES (IDENTIFIERS)

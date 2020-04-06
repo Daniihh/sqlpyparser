@@ -1,10 +1,6 @@
-# -*- encoding:utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-from pyparsing import *
-
-from mysqlparse.grammar.data_type import data_type_syntax
-
+from pyparsing import CaselessKeyword, Forward, MatchFirst, Optional, Or, \
+	QuotedString, QuotedString, Suppress, Word, ZeroOrMore, nums, replaceWith
+from .data_type import data_type_syntax
 
 #
 # PARTIAL PARSERS

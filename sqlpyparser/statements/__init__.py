@@ -31,8 +31,8 @@ class FakeSQLClass():
 		return self(self.parse_expression.parseString(content))
 
 sub_modules = [
-	loader.find_module(module_name).load_module(module_name)
-		for loader, module_name, _ in walk_packages(__path__)
+	finder.find_spec(f"sqlpyparser.statements.{module_name}").loader.load_module()
+		for finder, module_name, _ in walk_packages(__path__)
 ]
 
 sql_classes: List[Union[Type[SQLStatement], FakeSQLClass]] = [

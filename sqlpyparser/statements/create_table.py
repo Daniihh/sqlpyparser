@@ -1,11 +1,7 @@
-# -*- encoding:utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-from pyparsing import *
-
-from mysqlparse.grammar.column_definition import column_definition_syntax
-from mysqlparse.grammar.identifier import identifier_syntax
-
+from pyparsing import CaselessKeyword, Group, OneOrMore, Optional, Suppress, \
+	Word, ZeroOrMore, alphanums, alphas, delimitedList, replaceWith
+from .column_definition import column_definition_syntax
+from .identifier import identifier_syntax
 
 #
 # PARTIAL PARSERS

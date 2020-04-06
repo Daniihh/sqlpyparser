@@ -1,4 +1,3 @@
-# -*- encoding:utf-8 -*-
 from pyparsing import CaselessKeyword, Group, Optional, Suppress, delimitedList
 from mysqlparse.grammar.identifier import database_name_syntax, \
 	identifier_syntax, ParseExpression
@@ -42,13 +41,14 @@ select_syntax = (
 	Suppress(Optional(";"))
 )
 
-from sqlpyparser.statements import SQLStatement
+from . import SQLStatement
 
 class SelectStatement(SQLStatement):
 	statement_type = "SELECT"
 	parse_expression = select_syntax
 
 	def __init__(self, expression: ParseExpression):
+		print(expression)
 		self.columns = expression.get("columns")
 
 target = SelectStatement

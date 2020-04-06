@@ -1,26 +1,6 @@
-# -*- encoding:utf-8 -*-
-from __future__ import (
-	absolute_import,
-	division,
-	print_function,
-	unicode_literals
-	)
-
-from pyparsing import (
-	CaselessKeyword,
-	Group,
-	OneOrMore,
-	Optional,
-	delimitedList,
-	replaceWith
-	)
-
-from mysqlparse.grammar.identifier import (
-	database_name_syntax,
-	identifier_syntax
-	)
-
-_drop_type = CaselessKeyword("TABLE").setResultsName("drop_type")
+from pyparsing import CaselessKeyword, Group, OneOrMore, Optional, \
+	delimitedList, replaceWith
+from .identifier import database_name_syntax, identifier_syntax
 
 _temporary = Optional(
 	CaselessKeyword("TEMPORARY").setParseAction(replaceWith(True)),

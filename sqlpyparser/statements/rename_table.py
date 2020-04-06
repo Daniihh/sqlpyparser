@@ -1,24 +1,6 @@
-# -*- encoding:utf-8 -*-
-from __future__ import (
-	absolute_import,
-	division,
-	print_function,
-	unicode_literals
-	)
-
-from pyparsing import (
-	CaselessKeyword,
-	Group,
-	OneOrMore,
-	Optional,
-	Suppress,
+from pyparsing import CaselessKeyword, Group, OneOrMore, Optional, Suppress, \
 	delimitedList
-	)
-
-from mysqlparse.grammar.identifier import (
-	identifier_syntax,
-	database_name_syntax
-	)
+from .identifier import database_name_syntax, identifier_syntax
 
 #
 # PARTIAL PARSERS
