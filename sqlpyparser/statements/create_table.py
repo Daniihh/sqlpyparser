@@ -46,3 +46,5 @@ create_table_syntax = (
 	).setResultsName("table_options") +
 	Suppress(Optional(";"))
 )
+
+target = (create_table_syntax, "CREATE")

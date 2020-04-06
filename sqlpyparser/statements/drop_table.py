@@ -40,3 +40,5 @@ drop_table_syntax = (
 				  .setResultsName("dropped", listAllMatches=True))
 		)
 	)
+
+target = (drop_table_syntax, "DROP")

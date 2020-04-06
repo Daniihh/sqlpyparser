@@ -175,3 +175,5 @@ alter_table_syntax = (
 	delimitedList(Group(_alter_specification_syntax).setResultsName("alter_specification", listAllMatches=True)) +
 	Suppress(Optional(";"))
 )
+
+target = (alter_table_syntax, "ALTER")

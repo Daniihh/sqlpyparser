@@ -1,7 +1,7 @@
 # -*- encoding:utf-8 -*-
 from pyparsing import CaselessKeyword, Group, Optional, Suppress, delimitedList
 from mysqlparse.grammar.identifier import database_name_syntax, \
-	identifier_syntax
+	identifier_syntax, ParseExpression
 
 # TABLE REFERENCE
 # Specifies a table from a database to use, and an optional alias given.
@@ -41,3 +41,14 @@ select_syntax = (
 	delimitedList(table_reference).setResultsName("tables") + 
 	Suppress(Optional(";"))
 )
+
+from sqlpyparser.statements import SQLStatement
+
+class SelectStatement(SQLStatement):
+	statement_type = "SELECT"
+	parse_expression = select_syntax
+
+	def __init__(self, expression: ParseExpression):
+		self.columns = expression.get("columns")
+
+target = SelectStatement

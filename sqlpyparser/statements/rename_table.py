@@ -47,3 +47,5 @@ rename_table_syntax = (
 		) +
 	Suppress(Optional(";"))
 )
+
+target = (rename_table_syntax, "RENAME")
