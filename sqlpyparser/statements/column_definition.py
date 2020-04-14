@@ -1,6 +1,6 @@
 from pyparsing import CaselessKeyword, Forward, MatchFirst, Optional, Or, \
 	QuotedString, QuotedString, Suppress, Word, ZeroOrMore, nums, replaceWith
-from .data_type import data_type_syntax
+from .data_type_old import data_type_syntax
 
 #
 # PARTIAL PARSERS

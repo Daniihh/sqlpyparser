@@ -1,10 +1,17 @@
-from typing import IO, Union
-from .statements import sql_classes, sql_syntax
+from typing import IO, List, Literal, Union, overload
+from pyparsing import ParseResults
+from .statements import SQLStatement, sql_classes, sql_syntax
 
 __author__ = 'Julius Seporaitis'
 __email__ = 'julius@seporaitis.net'
 __version__ = '0.1.6'
 
+@overload
+def parse(file_or_sql: Union[str, IO[Union[str, bytes]]],
+		experimental: Literal[False]) -> ParseResults: ...
+@overload
+def parse(file_or_sql: Union[str, IO[Union[str, bytes]]],
+		experimental: Literal[True]) -> List[SQLStatement]: ...
 def parse(file_or_sql: Union[str, IO[Union[str, bytes]]],
 		experimental: bool = False):
 	sql_data = file_or_sql if isinstance(file_or_sql, str) else file_or_sql.read()

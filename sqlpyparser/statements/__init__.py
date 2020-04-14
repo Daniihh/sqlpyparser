@@ -70,10 +70,12 @@ sub_modules = [
 ]
 
 sql_classes: List[Union[Type[SQLStatement], FakeSQLClass]] = [
-	FakeSQLClass(sub_module.target[0], sub_module.target[1])
-		if tupleisinstance(sub_module.target, (ParseExpression, str))
-			else sub_module.target for sub_module in sub_modules
-				if hasattr(sub_module, "target")
+	clazz for sublist in
+		([FakeSQLClass(sub_module.target[0], sub_module.target[1])]
+			if tupleisinstance(sub_module.target, (ParseExpression, str))
+				else sub_module.target for sub_module in sub_modules
+					if hasattr(sub_module, "target"))
+						for clazz in sublist
 ]
 
 sql_syntax = ZeroOrMore(Group(Or(

@@ -1,6 +1,7 @@
 from typing import Optional as OptionalType
 from pyparsing import CaselessKeyword, Group, Optional, ParseResults
 from . import SQLExpression
+from .data_types import DataType, DataTypeName
 from .identifier import database_name_syntax, \
 	identifier_syntax
 
@@ -55,3 +56,19 @@ class ColumnExpression(SQLExpression):
 
 	def __str__(self):
 		return self.name if self.alias is None else f"{self.name} AS {self.alias}"
+
+class ColumnDefinitionExpression(SQLExpression):
+	parse_expression = Group(
+		identifier_syntax.setResultsName("column_name") +
+		DataType.parse_expression
+	)
+
+	def __init__(self, results: ParseResults):
+		data_type = results.get("data_type")
+		type_argument = data_type[1] if len(data_type) > 1 else None
+		self.parse_results = results
+		self.column_name: str = results.get("column_name")
+		self.type_name: DataTypeName = \
+			DataTypeName(data_type[0], type_argument)
+		self.type_argument: Optional[int] = \
+			None if type_argument is None else int(type_argument)

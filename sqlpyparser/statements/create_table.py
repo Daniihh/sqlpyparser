@@ -1,5 +1,8 @@
-from pyparsing import CaselessKeyword, Group, OneOrMore, Optional, Suppress, \
-	Word, ZeroOrMore, alphanums, alphas, delimitedList, replaceWith
+from sqlpyparser.statements.expressions import ColumnDefinitionExpression
+from pyparsing import CaselessKeyword, Group, OneOrMore, Optional, \
+	ParseResults, Suppress, Word, ZeroOrMore, alphanums, alphas, \
+	delimitedList, replaceWith
+from . import SQLStatement
 from .column_definition import column_definition_syntax
 from .identifier import identifier_syntax
 
@@ -43,4 +46,26 @@ create_table_syntax = (
 	Suppress(Optional(";"))
 )
 
-target = (create_table_syntax, "CREATE")
+class CreateStatement(SQLStatement):
+	statement_type = "CREATE"
+	create_type: str
+
+class CreateTableStatement(CreateStatement):
+	create_type = "TABLE"
+	parse_expression = create_table_syntax
+
+	def __init__(self, results: ParseResults):
+		self.parse_results = results
+		self.table_name: str = results.get("table_name")
+		self.column_definitions = [
+			ColumnDefinitionExpression(column_data)
+				for column_data in results.get("column_specification")
+		]
+
+class CreateDatabaseStatement(CreateStatement):
+	pass
+
+class CreateIndexStatement(CreateStatement):
+	pass
+
+target = [CreateTableStatement]

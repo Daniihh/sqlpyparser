@@ -53,6 +53,7 @@ def extend_to_character_type(type_def, binary=True):
 data_type_syntax = Forward()
 data_type_syntax <<= (
 	define_basic_type("BIT") |
+	define_basic_type("BOOL") |
 
 	extend_to_integer_type(define_basic_type("TINYINT")) |
 	extend_to_integer_type(define_basic_type("SMALLINT")) |
@@ -116,3 +117,5 @@ data_type_syntax <<= (
 		binary=False
 	)
 ).setResultsName("data_type")
+
+#wave was here no touché

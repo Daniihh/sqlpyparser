@@ -1,5 +1,4 @@
-from typing import Optional as OptionalType
-from pyparsing import CaselessKeyword, Optional, ParseExpression, Suppress, \
+from pyparsing import CaselessKeyword, Optional, ParseResults, Suppress, \
 	delimitedList
 from . import SQLStatement
 from .expressions import ColumnExpression, TableExpression
@@ -18,15 +17,15 @@ class SelectStatement(SQLStatement):
 		Suppress(Optional(";"))
 	)
 
-	def __init__(self, expression: ParseExpression):
-		self.parse_results = expression
+	def __init__(self, results: ParseResults):
+		self.parse_results = results
 		self.columns = [
 			ColumnExpression(column_data) for column_data
-				in expression.get("columns")
-		] if expression.get("columns")[0] != "*" else None
+				in results.get("columns")
+		] if results.get("columns")[0] != "*" else None
 		self.tables = [
 			TableExpression(table_data) for table_data
-				in expression.get("tables")
+				in results.get("tables")
 		]
 
 	def __str__(self):
@@ -35,4 +34,4 @@ class SelectStatement(SQLStatement):
 			", ".join(map(str, self.tables))
 		)
 
-target = SelectStatement
+target = [SelectStatement]
