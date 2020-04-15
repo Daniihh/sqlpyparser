@@ -1,0 +1,9 @@
+author:
+  name: Daniel Conley
+  email: "notyet:tm:"
+
+description: A swiss army knife for SQL parsing.
+site: https://github.com/Daniihh/sqlpyparser
+
+status: 3
+version: 0.1.6

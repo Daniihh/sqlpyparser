@@ -1,65 +1,48 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-import os
-import re
-from setuptools import find_packages, setup
+from setuptools import setup, find_packages
+from typing import Any, Dict
+from yaml import FullLoader, load
 
+package_info: Dict[str, Any]
+with open("package-info.yml", "r") as info:
+	package_info = load(info.read(), Loader=FullLoader)
 
-def get_version(package):
-	"""
-	Return package version as listed in `__version__` in `init.py`.
-	"""
-	init_py = open(os.path.join(package, '__init__.py')).read()
-	return re.search("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
+description: str
+with open("README.md", "r") as desc:
+	description = desc.read()
 
+development_status = int(package_info.get("status")) # type: ignore
+development_statuses = {
+	1: "Planning",
+	2: "Pre-Alpha",
+	3: "Alpha",
+	4: "Beta",
+	5: "Production/Stable",
+	6: "Mature",
+	7: "Inactive"
+}
 
-version = get_version('mysqlparse')
+undefined = (None,) # Sentinel value.
+setup_info = {
+	"name": "sqlpyparser",
+	"version": package_info.get("version"),
+	"packages": find_packages(exclude=["tests", "tests.*"]),
 
+	"author": package_info.get("author").get("name"),
+	"author_email": package_info.get("author").get("email"),
+	"description": package_info.get("description"),
+	"keywords": " ".join(package_info.get("search_terms")) # type: ignore
+		if package_info.get("search_terms") is not None else undefined,
+	"url": package_info.get("site"),
 
-with open('README.rst') as readme_file:
-	readme = readme_file.read()
+	"classifiers": [
+		f"Development Status :: {development_status} " +
+			f"- {development_statuses.get(development_status)}",
+		"Intended Audience :: Developers",
+		"Programming Language :: Python :: 3.8",
+		"License :: OSI Approved :: MIT License"
+	]
+}
 
-with open('HISTORY.rst') as history_file:
-	history = history_file.read().replace('.. :changelog:', '')
-
-requirements = [
-	'pyparsing',
-	'six',
-]
-
-test_requirements = [
-	'pyparsing',
-	'six',
-]
-
-setup(
-	name='mysqlparse',
-	version=version,
-	description="A library for parsing SQL statements.",
-	long_description=readme + '\n\n' + history,
-	author="Julius Seporaitis",
-	author_email='julius@seporaitis.net',
-	url='https://github.com/seporaitis/mysqlparse',
-	packages=find_packages(exclude=['tests', 'tests.*']),
-	package_dir={
-		'mysqlparse': 'mysqlparse',
-		'mysqlparse.grammar': 'mysqlparse/grammar'
-	},
-	include_package_data=True,
-	install_requires=requirements,
-	license="MIT",
-	zip_safe=False,
-	keywords='sql parse pyparsing mysql database',
-	classifiers=[
-		'Development Status :: 3 - Alpha',
-		'Intended Audience :: Developers',
-		'License :: OSI Approved :: MIT License',
-		'Natural Language :: English',
-		"Programming Language :: Python :: 2",
-		'Programming Language :: Python :: 2.7',
-		'Programming Language :: Python :: 3',
-		'Programming Language :: Python :: 3.6',
-	],
-	test_suite='tests',
-	tests_require=test_requirements
-)
+setup(**{
+	key: value for key, value in setup_info.items() if value is not undefined
+})
