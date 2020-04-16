@@ -49,14 +49,24 @@ class SQLStatement(SQLExpression):
 	statement_type: str
 	parse_expression: ParseExpression
 
-class FakeSQLClass():
-	def __new__(cls, expression: ParseExpression, statement_type: str) -> \
-			Type[SQLStatement]:
-		return super().__new__(cls)
+class FakeSQLStatementClass():
+	parse_expression: ParseExpression
 
-	def __init__(self, expression: ParseExpression, statement_type: str):
-		self.statement_type = statement_type
-		self.parse_expression = expression
+	def __new__(cls, expression: ParseExpression, stmnt_type: str):
+		class FakeSQLStatement(SQLStatement):
+			statement_type = stmnt_type
+			parse_expression = expression
+
+			def __new__(cls, results: ParseResults) -> SQLStatement:
+				return results
+
+		sentinel = (None,)
+		for attr in dir(cls):
+			if getattr(FakeSQLStatement, attr, sentinel) is not sentinel:
+				continue
+			setattr(FakeSQLStatement, attr, getattr(cls, attr, sentinel))
+		
+		return FakeSQLStatement
 
 	def __call__(self, results: ParseResults) -> SQLStatement:
 		return results
@@ -69,9 +79,9 @@ sub_modules = [
 		for finder, module_name, _ in walk_packages(__path__)
 ]
 
-sql_classes: List[Union[Type[SQLStatement], FakeSQLClass]] = [
+sql_classes: List[Union[Type[SQLStatement], FakeSQLStatementClass]] = [
 	clazz for sublist in
-		([FakeSQLClass(sub_module.target[0], sub_module.target[1])]
+		([FakeSQLStatementClass(sub_module.target[0], sub_module.target[1])]
 			if tupleisinstance(sub_module.target, (ParseExpression, str))
 				else sub_module.target for sub_module in sub_modules
 					if hasattr(sub_module, "target"))

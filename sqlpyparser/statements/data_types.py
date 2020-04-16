@@ -1,6 +1,11 @@
 from typing import Any
-from pyparsing import CaselessKeyword, Or, ParseResults
+from pyparsing import CaselessKeyword, Or, ParseResults, QuotedString
 from . import SQLExpression
+
+def add_key_value(key: str, value: Any):
+	def set_parse_action(toks: ParseResults):
+		toks[key] = value
+	return set_parse_action
 
 class DataTypeName(str):
 	def __new__(cls, value: str, argument: Any):
@@ -22,6 +27,21 @@ class DataType(SQLExpression):
 		CaselessKeyword("INT")
 	)).setResultsName("type_name")
 
-	def __init__(self, expression: ParseResults):
-		self.parse_results = expression
-		self.type_name = expression.get("type_name")
+	def __init__(self, results: ParseResults):
+		self.parse_results = results
+		self.type_name: str = results.get("type_name")
+
+class DataLiteral(SQLExpression):
+	parse_expression = (
+		(
+			CaselessKeyword("TRUE") ^
+			CaselessKeyword("FALSE")
+		).setParseAction(add_key_value("type", "boolean")) ^
+		QuotedString('"')
+			.setParseAction(add_key_value("type", "string"))
+	).setResultsName("value")
+
+	def __init__(self, results: ParseResults):
+		self.parse_results = results
+		self.value: Any = results.get("value")
+		self.type: str = results.get("type")
