@@ -8,7 +8,7 @@ from .utils import stripQuotes
 # Source: https://dev.mysql.com/doc/refman/5.7/en/identifiers.html
 #
 
-identifier_syntax = Or([
+identifier_syntax: Or = Or([
 	Word(alphanums + "_$"),
 	QuotedString('"'),
 	QuotedString("`"),
