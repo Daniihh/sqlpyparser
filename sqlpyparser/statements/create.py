@@ -1,8 +1,8 @@
-from sqlpyparser.statements.expressions import ColumnDefinitionExpression
 from pyparsing import CaselessKeyword, Group, OneOrMore, Optional, \
 	ParseResults, Suppress, Word, ZeroOrMore, alphanums, alphas, \
 	delimitedList, replaceWith
 from . import SQLStatement
+from .expressions import ColumnDefinitionExpression
 from .column_definition import column_definition_syntax
 from .identifier import identifier_syntax
 
