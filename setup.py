@@ -10,6 +10,10 @@ description: str
 with open("README.md", "r") as desc:
 	description = desc.read()
 
+requirements = [
+	"pyparsing>=2.0.2"
+]
+
 development_status = int(package_info.get("status")) # type: ignore
 development_statuses = {
 	1: "Planning",
@@ -26,6 +30,7 @@ setup_info = {
 	"name": "sqlpyparser",
 	"version": package_info.get("version"),
 	"packages": find_packages(exclude=["tests", "tests.*"]),
+	"install_requires": requirements,
 
 	"author": package_info.get("author").get("name"),
 	"author_email": package_info.get("author").get("email"),
