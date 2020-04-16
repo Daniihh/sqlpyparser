@@ -52,13 +52,15 @@ class SQLStatement(SQLExpression):
 class FakeSQLStatementClass():
 	parse_expression: ParseExpression
 
-	def __new__(cls, expression: ParseExpression, stmnt_type: str):
+	def __new__(cls, expression: ParseExpression, stmnt_type: str) -> Type[SQLStatement]:
 		class FakeSQLStatement(SQLStatement):
 			statement_type = stmnt_type
 			parse_expression = expression
 
 			def __new__(cls, results: ParseResults) -> SQLStatement:
 				return results
+
+			def __init__(self, results: ParseResults): ...
 
 		sentinel = (None,)
 		for attr in dir(cls):
@@ -68,10 +70,7 @@ class FakeSQLStatementClass():
 		
 		return FakeSQLStatement
 
-	def __call__(self, results: ParseResults) -> SQLStatement:
-		return results
-
-	def parse(self, content: str):
+	def parse(self: Type[SQLStatement], content: str):
 		return self(self.parse_expression.parseString(content))
 
 sub_modules = [
@@ -79,13 +78,14 @@ sub_modules = [
 		for finder, module_name, _ in walk_packages(__path__)
 ]
 
-sql_classes: List[Union[Type[SQLStatement], FakeSQLStatementClass]] = [
+sql_classes: List[Union[Type[SQLStatement]]] = [
 	clazz for sublist in
 		([FakeSQLStatementClass(sub_module.target[0], sub_module.target[1])]
 			if tupleisinstance(sub_module.target, (ParseExpression, str))
 				else sub_module.target for sub_module in sub_modules
 					if hasattr(sub_module, "target"))
-						for clazz in sublist
+						for clazz in sublist # type: ignore
+	# https://github.com/microsoft/pyright/issues/625
 ]
 
 sql_syntax = ZeroOrMore(Group(Or(

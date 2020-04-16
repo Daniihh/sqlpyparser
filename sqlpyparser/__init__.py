@@ -22,8 +22,9 @@ def parse(file_or_sql: Union[str, IO[Union[str, bytes]]],
 	if experimental:
 		return [
 			next(sql_class for sql_class in sql_classes if \
-				sql_class.statement_type == sql_part.get("statement_type"))(sql_part)
-					for sql_part in parsed_sql
+				sql_class.statement_type == sql_part.get("statement_type"))(
+					sql_part) # type: ignore
+						for sql_part in parsed_sql
 		]
 	else:
 		return parsed_sql
