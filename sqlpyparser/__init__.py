@@ -17,7 +17,7 @@ def parse(file_or_sql: Union[str, IO[Union[str, bytes]]],
 	sql_data = file_or_sql if isinstance(file_or_sql, str) else file_or_sql.read()
 	sql_str = sql_data if isinstance(sql_data, str) else sql_data.decode("utf-8")
 
-	parsed_sql = sql_syntax.parseString(sql_str)
+	parsed_sql = sql_syntax.parseString(sql_str, parseAll=True)
 
 	if experimental:
 		return [
