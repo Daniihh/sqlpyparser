@@ -54,7 +54,10 @@ class CreateTableStatement(CreateStatement):
 	create_type = "TABLE"
 	parse_expression = create_table_syntax
 
-	def __init__(self, results: ParseResults):
+	def __init_from_args__(self):
+		pass
+
+	def __init_from_results__(self, results: ParseResults):
 		self.parse_results = results
 		self.table_name: str = results.get("table_name")
 		self.column_definitions = [

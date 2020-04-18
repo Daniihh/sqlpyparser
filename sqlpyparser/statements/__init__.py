@@ -5,18 +5,31 @@ from abc import ABC, abstractmethod
 from ..utilities import RawText, tupleisinstance
 
 class SQLExpression(ABC):
-	parse_results: ParseResults
+	parse_results: Optional[ParseResults] = None
 	parse_expression: Optional[ParseExpression]
 
 	@abstractmethod
-	def __init__(self, results: ParseResults): ...
+	def __init_from_args__(self, *args, **kwargs) -> None: ...
+	
+	@abstractmethod
+	def __init_from_results__(self, results: ParseExpression) -> None: ...
+
+	@classmethod
+	def __new__(cls, *args, **kwargs):
+		self: SQLExpression = super().__new__(cls)
+		if len(args) == 2 and type(args[1]) is ParseResults:
+			self.__init_from_results__(args[1])
+		else:
+			self.__init_from_args__(*args[1:], **kwargs)
+		return self
 
 	def __getitem__(self, key: int) -> List[str]:
 		return self.parse_results[key]
 
 	def __getattr__(self, attribute: str) -> ParseResults:
-		if not hasattr(self, "parse_results"):
-			raise AttributeError()
+		if self.parse_results is None:
+			raise AttributeError("This SQLExpression was not created with " +
+				"ParseResults.")
 		return self.parse_results.get(attribute)
 
 	def __repr__(self, class_props_shown: int = 3, results_props_shown: int = 2):
@@ -27,7 +40,7 @@ class SQLExpression(ABC):
 		class_props_not_shown = len(class_props) - class_props_shown
 		results_props = {
 			key: val if not isinstance(val, ParseResults) else RawText("...")
-				for key, val in dict(self.parse_results).items()
+				for key, val in dict(self.parse_results or {}).items()
 		}
 		results_props_short = dict([*results_props.items()][:results_props_shown])
 		results_props_not_shown = len(results_props) - results_props_shown
@@ -43,6 +56,9 @@ class SQLExpression(ABC):
 		)
 
 	def get(self, item: str, defaultValue: Any = None) -> ParseResults:
+		if self.parse_results is None:
+			raise AttributeError("This SQLExpression was not created with " +
+				"ParseResults.")
 		return self.parse_results.get(item, defaultValue)
 
 class SQLStatement(SQLExpression):

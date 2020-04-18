@@ -21,12 +21,22 @@ class TableExpression(SQLExpression):
 		)
 	)
 
-	def __init__(self, results: ParseResults):
+	database: OptionalType[str]
+	name: str
+	alias: OptionalType[str]
+
+	def __init_from_args__(self, name: str, database: OptionalType[str] = None,
+			alias: OptionalType[str] = None):
+		self.name = name
+		self.database = database
+		self.alias = alias
+
+	def __init_from_results__(self, results: ParseResults):
 		self.parse_results = results
-		self.database: OptionalType[str] = results.get("database_name") \
+		self.database = results.get("database_name") \
 			if not isinstance(results.get("database_name"), ParseResults) else None
-		self.name: str = results.get("table_name")
-		self.alias: OptionalType[str] = results.get("alias_name")
+		self.name = results.get("table_name")
+		self.alias = results.get("alias_name")
 
 	def __str__(self):
 		return "{}{}{}".format(
@@ -49,10 +59,17 @@ class ColumnExpression(SQLExpression):
 		)
 	)
 
-	def __init__(self, results: ParseResults):
+	name: str
+	alias: OptionalType[str]
+
+	def __init_from_args__(self, name: str, alias: OptionalType[str] = None):
+		self.name = name
+		self.alias = name
+
+	def __init_from_results__(self, results: ParseResults):
 		self.parse_results = results
-		self.name: str = results.get("column_name")
-		self.alias: OptionalType[str] = results.get("alias_name")
+		self.name = results.get("column_name")
+		self.alias = results.get("alias_name")
 
 	def __str__(self):
 		return self.name if self.alias is None else f"{self.name} AS {self.alias}"
@@ -63,7 +80,10 @@ class ColumnDefinitionExpression(SQLExpression):
 		DataType.parse_expression
 	)
 
-	def __init__(self, results: ParseResults):
+	def __init_from_args__(self):
+		pass
+
+	def __init_from_results__(self, results: ParseResults):
 		data_type = results.get("data_type")
 		type_argument = data_type[1] if len(data_type) > 1 else None
 		self.parse_results = results

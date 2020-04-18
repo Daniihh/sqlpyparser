@@ -27,7 +27,10 @@ class DataType(SQLExpression):
 		CaselessKeyword("INT")
 	)).setResultsName("type_name")
 
-	def __init__(self, results: ParseResults):
+	def __init_from_args__(self):
+		pass
+
+	def __init_from_results__(self, results: ParseResults):
 		self.parse_results = results
 		self.type_name: str = results.get("type_name")
 
@@ -41,7 +44,14 @@ class DataLiteral(SQLExpression):
 			.setParseAction(add_key_value("type", "string"))
 	).setResultsName("value")
 
-	def __init__(self, results: ParseResults):
+	type: str
+	value: Any
+
+	def __init_from_args__(self, type: str, value: Any):
+		self.type = type
+		self.value = value
+
+	def __init_from_results__(self, results: ParseResults):
 		self.parse_results = results
-		self.value: Any = results.get("value")
-		self.type: str = results.get("type")
+		self.type = results.get("type")
+		self.value = results.get("value")
