@@ -27,6 +27,9 @@ class InsertStatement(SQLStatement):
 		).setResultsName("rows", listAllMatches=True) + \
 		Suppress(")")
 
+	def __init_from_args__(self):
+		pass
+
 	def __init_from_results__(self, results: ParseResults):
 		rows = results.get("rows")
 		columns = results.get("columns")
