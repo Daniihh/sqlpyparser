@@ -1,6 +1,6 @@
-from typing import IO, List, Literal, Union, overload
-from pyparsing import ParseResults
 from .statements import SQLStatement, sql_classes, sql_syntax
+from pyparsing import ParseResults
+from typing import IO, List, Literal, Union, overload
 
 __author__ = 'Julius Seporaitis'
 __email__ = 'julius@seporaitis.net'
