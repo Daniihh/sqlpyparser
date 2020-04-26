@@ -1,4 +1,4 @@
-from typing import Optional as OptionalType
+from typing import Optional as OptionalT
 from pyparsing import CaselessKeyword, Group, Optional, ParseResults
 from . import SQLExpression
 from .data_types import DataType, DataTypeName
@@ -21,12 +21,12 @@ class TableExpression(SQLExpression):
 		)
 	)
 
-	database: OptionalType[str]
+	database: OptionalT[str]
 	name: str
-	alias: OptionalType[str]
+	alias: OptionalT[str]
 
-	def __init_from_args__(self, name: str, database: OptionalType[str] = None,
-			alias: OptionalType[str] = None):
+	def __init_from_args__(self, name: str, database: OptionalT[str] = None,
+			alias: OptionalT[str] = None):
 		self.name = name
 		self.database = database
 		self.alias = alias
@@ -60,9 +60,9 @@ class ColumnExpression(SQLExpression):
 	)
 
 	name: str
-	alias: OptionalType[str]
+	alias: OptionalT[str]
 
-	def __init_from_args__(self, name: str, alias: OptionalType[str] = None):
+	def __init_from_args__(self, name: str, alias: OptionalT[str] = None):
 		self.name = name
 		self.alias = name
 

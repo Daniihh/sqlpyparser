@@ -1,57 +1,47 @@
-from pyparsing import CaselessKeyword, Optional, ParseResults, Suppress, \
+from __future__ import annotations
+from ..constructs import SQLStatement
+from ..utilities import OneOrMore, ZeroOrMore, as_list
+from pyparsing import CaselessKeyword, ParseExpression, ParseResults, \
 	delimitedList
-from typing import List, Optional as OptionalType, Union
-from . import SQLStatement
-from .expressions import ColumnExpression, TableExpression
+from typing import Callable, Generic, List, Optional, Type, TypeVar, Union
+
+C = TypeVar("C")
+T = TypeVar("T")
 
 # SELECT SYNTAX
 # The full implemented SELECT syntax.
 # Source: https://dev.mysql.com/doc/refman/5.7/en/select.html
-class SelectStatement(SQLStatement):
+class SelectStatement(SQLStatement, Generic[C, T]):
 	statement_type = "SELECT"
-	parse_expression = (
-		CaselessKeyword("SELECT").setResultsName("statement_type") +
-		(delimitedList(ColumnExpression.parse_expression) ^ CaselessKeyword("*"))
-			.setResultsName("columns") +
-		CaselessKeyword("FROM") +
-		delimitedList(TableExpression.parse_expression).setResultsName("tables") +
-		Suppress(Optional(";"))
-	)
 
-	columns: List[ColumnExpression]
-	tables: List[TableExpression]
+	@classmethod
+	def create_parse_expression(cls, column_expr: ParseExpression,
+			table_expr: ParseExpression) -> ParseExpression:
+		return \
+			CaselessKeyword("SELECT").setResultsName("statement_type") + \
+			(delimitedList(column_expr) ^ CaselessKeyword("*")) \
+				.setResultsName("columns") + \
+			CaselessKeyword("FROM") + \
+			delimitedList(table_expr).setResultsName("tables")
 
-	def __init_from_args__(self,
-			columns: OptionalType[Union[List[Union[str, ColumnExpression]], str,
-				ColumnExpression]],
-			tables: Union[List[Union[str, TableExpression]], str, TableExpression]):
-		column_list = columns if isinstance(columns, list) else [columns] \
-			if columns is not None else []
-		table_list = tables if isinstance(tables, list) else [tables] \
-			if tables is not None else []
+	@classmethod
+	def from_results(cls, results: ParseResults,
+			column_from_results: Callable[[ParseResults], C],
+			table_from_results: Callable[[ParseResults], T]) -> SelectStatement[C, T]:
+		return cls(
+			column_from_results(results.get("columns")),
+			table_from_results(results.get("tables")),
+			results=results
+		)
 
-		if len(table_list) == 0:
-			raise ValueError("tables cannot be empty")
+	columns: List[C]
+	tables: List[T]
 
-		self.columns = [
-			column if isinstance(column, ColumnExpression) \
-				else ColumnExpression(column) for column in column_list
-		]
-		self.tables = [
-			table if isinstance(table, TableExpression) \
-				else TableExpression(table) for table in table_list
-		]
-
-	def __init_from_results__(self, results: ParseResults):
+	def __init__(self, columns: ZeroOrMore[Union[C]], tables: OneOrMore[Union[T]],
+			*, results: Optional[ParseResults] = None) -> None:
 		self.parse_results = results
-		self.columns = [
-			ColumnExpression(column_data) for column_data
-				in results.get("columns")
-		] if results.get("columns")[0] != "*" else []
-		self.tables = [
-			TableExpression(table_data) for table_data
-				in results.get("tables")
-		]
+		self.columns = as_list(columns)
+		self.tables = as_list(tables)
 
 	def __str__(self):
 		return "SELECT {} FROM {}".format(

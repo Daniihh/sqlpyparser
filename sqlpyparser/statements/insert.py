@@ -1,10 +1,10 @@
-from typing import Dict, List
-from pyparsing import CaselessKeyword, Group, ParseResults, Suppress, \
-	delimitedList
 from . import SQLStatement
 from .expressions import TableExpression
 from .identifier import database_name_syntax, identifier_syntax
 from .data_types import DataLiteral
+from typing import Dict, List
+from pyparsing import CaselessKeyword, Group, ParseResults, Suppress, \
+	delimitedList
 
 class InsertStatement(SQLStatement):
 	statement_type = "INSERT"

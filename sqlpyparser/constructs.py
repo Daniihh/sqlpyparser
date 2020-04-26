@@ -2,7 +2,9 @@ from __future__ import annotations
 from .utilities import RawText
 from abc import ABC, abstractmethod
 from pyparsing import ParseExpression, ParseResults
-from typing import Any, List, Optional
+from typing import Any, List, Optional, TypeVar
+
+T = TypeVar("T")
 
 class SQLExpression(ABC):
 	parse_results: Optional[ParseResults] = None
@@ -13,7 +15,7 @@ class SQLExpression(ABC):
 
 	@classmethod
 	@abstractmethod
-	def from_results(cls, results: ParseResults) -> SQLExpression: ...
+	def from_results(cls: T, results: ParseResults) -> T: ...
 
 	def __init__(self, results: ParseResults):
 		self.parse_results = results
